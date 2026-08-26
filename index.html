@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>つみたて暴落シミュレーター｜過去の暴落データで積立投資を検証</title>
+<meta name="description" content="リーマンショック・ITバブル崩壊・コロナショックなど過去10件の暴落の実データで、積立投資が暴落に遭ったらどうなるかをシミュレーション。暴落は複数回設定でき、積立の停止期間・取り崩し期間にも対応しています。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <p class="site-title">つみたて暴落シミュレーター</p>
+    <p class="site-tagline">過去の暴落の実データで、積立を検証する</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <h1>暴落が来たら、積立資産はどうなるか</h1>
+    <p class="hero__lead">
+      リーマンショックやコロナショックの<strong>実際の月次データ</strong>をそのまま積立に当てはめて、
+      下落の深さと回復までの時間を再現します。暴落は何度でも置けます。
+    </p>
+    <ul class="hero__points">
+      <li><span class="hero__point-key">実データ</span>暴落期間は想定利回りではなく実際の値動きで計算</li>
+      <li><span class="hero__point-key">複数回</span>暴落を最大5回まで、好きなタイミングに配置</li>
+      <li><span class="hero__point-key">出口まで</span>積立・停止・取り崩しを期間ごとに設定可能</li>
+    </ul>
+  </section>
+
+  <section class="simulator" aria-labelledby="sim-heading">
+    <h2 id="sim-heading" class="simulator__heading">シミュレーション条件</h2>
+
+    <form id="sim-form" class="sim-form" novalidate>
+
+      <fieldset class="panel">
+        <legend class="panel__legend">基本条件</legend>
+        <div class="field-grid">
+          <div class="field">
+            <label for="input-years">運用期間</label>
+            <div class="field__input-row">
+              <input type="number" id="input-years" value="30" min="1" max="60" step="1" inputmode="numeric">
+              <span class="field__unit">年</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="input-initial">初期投資元本</label>
+            <div class="field__input-row">
+              <input type="number" id="input-initial" value="0" min="0" step="10" inputmode="decimal">
+              <span class="field__unit">万円</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="input-age">現在の年齢<span class="field__optional">任意</span></label>
+            <div class="field__input-row">
+              <input type="number" id="input-age" value="" min="0" max="120" step="1" inputmode="numeric" placeholder="未入力可">
+              <span class="field__unit">歳</span>
+            </div>
+            <p class="field__hint">入力すると、グラフの横軸に「何歳のとき」かを併記します。計算結果は変わりません。</p>
+          </div>
+
+          <div class="field field--wide">
+            <label for="input-return">想定利回り（年率）</label>
+            <div class="field__input-row">
+              <input type="number" id="input-return" value="5" min="-20" max="30" step="0.1" inputmode="decimal">
+              <span class="field__unit">%</span>
+            </div>
+            <p class="field__hint">暴落期間以外に使う利回りです。下の数値をクリックすると入ります。</p>
+            <div id="return-reference" class="return-reference"></div>
+            <p class="field__hint field__hint--fine">
+              各指数の年平均リターン（実績）。現地通貨ベースで為替は含みません。対象期間は指数ごとに異なります。
+            </p>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="panel">
+        <legend class="panel__legend">拠出プラン</legend>
+        <p class="panel__note">上から順に適用されます。指定した年から次の期間まで、その内容が続きます。</p>
+        <div id="phase-list" class="plan-list"></div>
+        <button type="button" id="add-phase" class="button button--ghost">＋ 期間を追加（停止・取り崩し）</button>
+      </fieldset>
+
+      <fieldset class="panel">
+        <legend class="panel__legend">暴落シナリオ</legend>
+        <p class="panel__note">
+          下落率と回復期間は選んだ指数での実績値です。暴落どうしの期間は重ねられません。
+        </p>
+        <div id="crash-list" class="plan-list"></div>
+        <button type="button" id="add-crash" class="button button--ghost">＋ 暴落を追加</button>
+      </fieldset>
+
+      <button type="submit" class="button button--primary">シミュレーションする</button>
+    </form>
+
+    <p id="form-error" class="form-error" role="alert" hidden></p>
+  </section>
+
+  <section id="results" class="results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">シミュレーション結果</h2>
+
+    <figure class="chart-figure">
+      <figcaption class="chart-figure__caption">資産推移</figcaption>
+      <ul id="result-legend" class="legend"></ul>
+      <div id="result-chart"></div>
+      <p class="chart-figure__hint">
+        グラフ上をなぞる（またはキーボードの左右キー）と各時点の金額を表示します。
+      </p>
+    </figure>
+
+    <div id="result-summary"></div>
+    <div id="result-insight"></div>
+    <div id="result-breakdown"></div>
+
+    <details class="table-details">
+      <summary>年次の数値を見る</summary>
+      <div id="result-table" class="table-scroll"></div>
+    </details>
+
+    <p id="result-source" class="source-note"></p>
+
+    <p class="disclaimer disclaimer--inline">
+      <strong>この結果は投資助言ではありません。</strong>
+      過去データに基づく試算であり、将来の運用成果を保証するものではありません。
+      暴落の時期・深さ・回復期間は毎回異なります。投資判断はご自身の責任で行ってください。
+    </p>
+  </section>
+
+  <!-- 広告枠：AdSense等の広告コードをこのdiv内に配置する -->
+  <div class="ad-slot" data-ad-slot="content-mid" aria-hidden="true"></div>
+
+  <section class="article" aria-labelledby="events-heading">
+    <h2 id="events-heading">選べる暴落イベント</h2>
+    <p>
+      10件の暴落を収録しています。下落率・回復期間は選ぶ指数で変わるため、
+      実際の数値は選択欄に表示されます（下表はS&amp;P500での月次終値ベース）。
+    </p>
+
+    <div class="table-scroll">
+      <table class="data-table data-table--events">
+        <thead>
+          <tr>
+            <th scope="col">イベント</th>
+            <th scope="col">時期</th>
+            <th scope="col">下落率</th>
+            <th scope="col">高値回復</th>
+            <th scope="col">特徴</th>
+          </tr>
+        </thead>
+        <!-- 下落率・高値回復の数値は data/events.json から js/ui.js が書き換える。
+             データを取り直したときに表がずれないよう、静的な値は初期表示用のフォールバック -->
+        <tbody id="event-table-body">
+          <tr>
+            <th scope="row">ITバブル崩壊</th><td>2000年</td><td>−46%</td><td>6年9ヶ月</td>
+            <td>ハイテク株中心。回復が非常に長引いた</td>
+          </tr>
+          <tr>
+            <th scope="row">リーマンショック</th><td>2008年</td><td>−53%</td><td>5年5ヶ月</td>
+            <td>戦後最大級。世界同時株安</td>
+          </tr>
+          <tr>
+            <th scope="row">コロナショック</th><td>2020年</td><td>−20%</td><td>6ヶ月</td>
+            <td>急落・急回復。金融緩和が支えた</td>
+          </tr>
+          <tr>
+            <th scope="row">トランプショック</th><td>2025年</td><td>−8%</td><td>5ヶ月</td>
+            <td>関税政策をめぐる動揺。影響は限定的</td>
+          </tr>
+          <tr>
+            <th scope="row">ブラックマンデー</th><td>1987年</td><td>−30%</td><td>1年11ヶ月</td>
+            <td>1日での下落は史上最大級。回復は早い</td>
+          </tr>
+          <tr>
+            <th scope="row">アジア通貨危機</th><td>1997年</td><td>−6%</td><td>4ヶ月</td>
+            <td>米国株は軽微。日経平均は−63%と対照的</td>
+          </tr>
+          <tr>
+            <th scope="row">ロシア危機・LTCM破綻</th><td>1998年</td><td>−16%</td><td>5ヶ月</td>
+            <td>急落したが短期で収束</td>
+          </tr>
+          <tr>
+            <th scope="row">チャイナショック</th><td>2015年</td><td>−9%</td><td>1年2ヶ月</td>
+            <td>新興国指数への影響が大きい</td>
+          </tr>
+          <tr>
+            <th scope="row">VIXショック</th><td>2018年</td><td>−6%</td><td>7ヶ月</td>
+            <td>変動率急騰による短期の急落</td>
+          </tr>
+          <tr>
+            <th scope="row">SVB破綻・米地銀危機</th><td>2023年</td><td>−3%</td><td>2ヶ月</td>
+            <td>金融不安に留まり株価への波及は小さい</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="fine-print">
+      指数は S&amp;P500／TOPIX／日経平均／オルカン相当（ACWI）／NASDAQ100／MSCIエマージング／MSCIコクサイ の7種類。
+      ETFで代用している指数は、設定日より前のイベントとは組み合わせられません。
+    </p>
+  </section>
+
+  <!-- 広告枠：AdSense等の広告コードをこのdiv内に配置する -->
+  <div class="ad-slot" data-ad-slot="content-bottom" aria-hidden="true"></div>
+
+  <section class="article" aria-labelledby="howto-heading">
+    <h2 id="howto-heading">計算ルール</h2>
+    <dl class="rule-list">
+      <div class="rule">
+        <dt>暴落期間は実データ</dt>
+        <dd>暴落中は想定利回りを使わず、実際の月次騰落率をそのまま適用します。前後の期間は想定利回りでの複利計算です。</dd>
+      </div>
+      <div class="rule">
+        <dt>回復の判定は指数ベース</dt>
+        <dd>指数が暴落前の高値を超えた月を回復完了とします。資産評価額では判定しません。</dd>
+      </div>
+      <div class="rule">
+        <dt>暴落中も拠出は続く</dt>
+        <dd>安い価格で口数を買い増すため、資産評価額は指数より早くピークに戻ることが多くなります。</dd>
+      </div>
+      <div class="rule">
+        <dt>取り崩しは負の拠出</dt>
+        <dd>取り崩し期間はその時点の価格で売却します。資産が尽きた場合はそこで止まり、グラフに印が付きます。</dd>
+      </div>
+      <div class="rule">
+        <dt>データは月次</dt>
+        <dd>日中の急落は反映されないため、報道で見る下落率より小さく出ます。</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="article" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">よくある質問</h2>
+
+    <h3>暴落を2つ以上置けないタイミングがあります</h3>
+    <p>前の暴落が高値を回復し切るまでは次を置けません。重なった指定は計算から外し、置ける最短の年数を結果画面に表示します。</p>
+
+    <h3>選んだ指数でイベントが出てこないのはなぜ？</h3>
+    <p>ETFで代用している指数は、その設定日より前のイベントのデータが存在しないためです。</p>
+
+    <h3>表示される下落率が報道と違います</h3>
+    <p>月次終値ベースで計算しているためです。日次の最安値は月次終値には現れません。</p>
+
+    <h3>暴落したら積立をやめるべき？</h3>
+    <p>本ツールは条件どおりに試算するだけで、良し悪しの判断は示しません。必要に応じて金融の専門家にご相談ください。</p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <h2 class="footer-heading">免責事項</h2>
+    <p class="disclaimer">
+      本サイトのシミュレーション結果は過去の市場データに基づく試算であり、
+      <strong>投資助言・投資勧誘を目的としたものではありません</strong>。
+      将来の運用成果を示唆または保証するものではなく、実際の運用結果とは異なります。
+      掲載情報の正確性・完全性は保証しかねます。本サイトの情報を利用して行った投資判断・投資行動により
+      生じたいかなる損害についても、当サイトは一切の責任を負いません。
+      投資に関する最終的な判断は、ご自身の責任と判断で行ってください。
+    </p>
+
+    <h2 class="footer-heading">データの出典</h2>
+    <p class="source">
+      過去の指数・ETFの月次価格データは Yahoo Finance より取得したものを加工して使用しています。
+      TOPIX・MSCIコクサイ・オルカン相当（ACWI）・MSCIエマージングは、指数そのものではなく
+      対応するETFの価格で代用しています。データは事前に取得・加工してサイトに同梱しており、
+      閲覧時に外部へ通信することはありません。
+    </p>
+
+    <p class="copyright">© つみたて暴落シミュレーター</p>
+  </div>
+</footer>
+
+<script src="js/simulation.js"></script>
+<script src="js/chart.js"></script>
+<script src="js/ui.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

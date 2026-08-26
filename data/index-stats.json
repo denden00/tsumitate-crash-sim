@@ -1,0 +1,187 @@
+{
+  "generatedAt": "2026-08-26T00:32:11.081Z",
+  "basis": "現地通貨ベース。為替の影響は含まない。ETFで代用している指数は分配金込み、指数そのもの（S&P500・日経平均・NASDAQ100）は配当を含まない価格リターン（各要素の dividendsIncluded を参照）。",
+  "indices": [
+    {
+      "indexId": "sp500",
+      "indexName": "S&P500",
+      "ticker": "^GSPC",
+      "currency": "USD",
+      "isEtfProxy": false,
+      "dividendsIncluded": false,
+      "months": 501,
+      "full": {
+        "percent": 9.430877986766383,
+        "from": "1985-01-01",
+        "to": "2026-08-25",
+        "years": 41.666666666666664
+      },
+      "last20y": {
+        "percent": 9.13711873816332,
+        "from": "2006-09-01",
+        "to": "2026-08-25",
+        "years": 20
+      },
+      "last10y": {
+        "percent": 13.477406179550776,
+        "from": "2016-09-01",
+        "to": "2026-08-25",
+        "years": 10
+      },
+      "volatilityPercent": 15.073703012546883
+    },
+    {
+      "indexId": "topix",
+      "indexName": "TOPIX",
+      "ticker": "1348.T",
+      "currency": "JPY",
+      "isEtfProxy": true,
+      "dividendsIncluded": true,
+      "months": 209,
+      "full": {
+        "percent": 11.125097975578523,
+        "from": "2009-04-30",
+        "to": "2026-08-26",
+        "years": 17.333333333333332
+      },
+      "last20y": null,
+      "last10y": {
+        "percent": 14.431286863977721,
+        "from": "2016-08-31",
+        "to": "2026-08-26",
+        "years": 10
+      },
+      "volatilityPercent": 15.687090632409545
+    },
+    {
+      "indexId": "nikkei225",
+      "indexName": "日経平均",
+      "ticker": "^N225",
+      "currency": "JPY",
+      "isEtfProxy": false,
+      "dividendsIncluded": false,
+      "months": 501,
+      "full": {
+        "percent": 4.1610796922869175,
+        "from": "1984-12-31",
+        "to": "2026-08-26",
+        "years": 41.666666666666664
+      },
+      "last20y": {
+        "percent": 7.263776464763438,
+        "from": "2006-08-31",
+        "to": "2026-08-26",
+        "years": 20
+      },
+      "last10y": {
+        "percent": 14.82776709080742,
+        "from": "2016-08-31",
+        "to": "2026-08-26",
+        "years": 10
+      },
+      "volatilityPercent": 20.239449143272385
+    },
+    {
+      "indexId": "nasdaq100",
+      "indexName": "NASDAQ100",
+      "ticker": "^NDX",
+      "currency": "USD",
+      "isEtfProxy": false,
+      "dividendsIncluded": false,
+      "months": 492,
+      "full": {
+        "percent": 14.4799547926457,
+        "from": "1985-10-01",
+        "to": "2026-08-25",
+        "years": 40.916666666666664
+      },
+      "last20y": {
+        "percent": 15.437662023376442,
+        "from": "2006-09-01",
+        "to": "2026-08-25",
+        "years": 20
+      },
+      "last10y": {
+        "percent": 19.604717418066464,
+        "from": "2016-09-01",
+        "to": "2026-08-25",
+        "years": 10
+      },
+      "volatilityPercent": 23.410170410750425
+    },
+    {
+      "indexId": "acwi",
+      "indexName": "オルカン相当（ACWI）",
+      "ticker": "ACWI",
+      "currency": "USD",
+      "isEtfProxy": true,
+      "dividendsIncluded": true,
+      "months": 223,
+      "full": {
+        "percent": 8.620632214451529,
+        "from": "2008-03-01",
+        "to": "2026-08-25",
+        "years": 18.5
+      },
+      "last20y": null,
+      "last10y": {
+        "percent": 12.613260674634862,
+        "from": "2016-09-01",
+        "to": "2026-08-25",
+        "years": 10
+      },
+      "volatilityPercent": 16.551542323422087
+    },
+    {
+      "indexId": "msci_em",
+      "indexName": "MSCIエマージング",
+      "ticker": "EEM",
+      "currency": "USD",
+      "isEtfProxy": true,
+      "dividendsIncluded": true,
+      "months": 282,
+      "full": {
+        "percent": 9.809786635920226,
+        "from": "2003-04-01",
+        "to": "2026-08-25",
+        "years": 23.416666666666668
+      },
+      "last20y": {
+        "percent": 5.9193552610019795,
+        "from": "2006-09-01",
+        "to": "2026-08-25",
+        "years": 20
+      },
+      "last10y": {
+        "percent": 8.37827202463657,
+        "from": "2016-09-01",
+        "to": "2026-08-25",
+        "years": 10
+      },
+      "volatilityPercent": 20.754194986330184
+    },
+    {
+      "indexId": "msci_kokusai",
+      "indexName": "MSCIコクサイ（除く日本の先進国）",
+      "ticker": "TOK",
+      "currency": "USD",
+      "isEtfProxy": true,
+      "dividendsIncluded": true,
+      "months": 226,
+      "full": {
+        "percent": 8.756005715669367,
+        "from": "2007-12-01",
+        "to": "2026-08-25",
+        "years": 18.75
+      },
+      "last20y": null,
+      "last10y": {
+        "percent": 13.447715145586958,
+        "from": "2016-09-01",
+        "to": "2026-08-25",
+        "years": 10
+      },
+      "volatilityPercent": 16.398933995246843
+    }
+  ]
+}
