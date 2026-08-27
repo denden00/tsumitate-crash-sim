@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://denden00.github.io/tsumitate-crash-sim/sitemap.xml
