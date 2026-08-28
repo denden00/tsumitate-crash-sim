@@ -29,6 +29,7 @@ jobs:
           mkdir -p _site
           cp index.html style.css main.js sitemap.xml robots.txt _site/
           cp -r js _site/js
+          cp -r assets _site/assets
           mkdir -p _site/data
           cp data/events.json data/index-stats.json _site/data/
 
