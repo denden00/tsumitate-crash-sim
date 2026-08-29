@@ -198,38 +198,6 @@ strong { color: var(--ink-primary); font-weight: 600; }
   font-size: 1.02rem;
 }
 
-.hero__points {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.6rem;
-  margin: 1.4rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.hero__points li {
-  display: flex;
-  align-items: baseline;
-  gap: 0.55rem;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.86rem;
-  color: var(--ink-secondary);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-}
-
-.hero__point-key {
-  flex: none;
-  padding: 0.1rem 0.5rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--accent-strong);
-  background: var(--accent-tint);
-  border-radius: 999px;
-}
-
 /* ---------- シミュレーター ---------- */
 
 .simulator {
@@ -239,6 +207,13 @@ strong { color: var(--ink-primary); font-weight: 600; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
+  scroll-margin-top: 1rem;
+}
+
+/* グラフ直下のボタンからフォーカスを受けるための tabindex="-1"。
+   スクロール先を示すだけなので、枠は出さない */
+.simulator:focus {
+  outline: none;
 }
 
 .simulator__heading {
@@ -695,6 +670,19 @@ input[type="number"]:disabled {
   cursor: not-allowed;
 }
 
+/* グラフ直下の「条件を変更する」。実行ボタンより弱く、ゴーストより存在感がある扱い */
+.button--outline {
+  color: var(--accent-strong);
+  background: var(--surface);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.button--outline:hover {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+}
+
 .form-error {
   margin-top: 1rem;
   padding: 0.7rem 0.95rem;
@@ -785,6 +773,13 @@ input[type="number"]:disabled {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
+/* グラフ直下のアクション行 */
+.chart-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.9rem;
+}
+
 /* ---------- 暴落ごとの内訳 ---------- */
 
 .section-subhead {
@@ -792,6 +787,53 @@ input[type="number"]:disabled {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink-secondary);
+}
+
+/* 暴落が多いと縦に長くなるので、たたんで読み飛ばせるようにする */
+.breakdown {
+  margin-top: 2rem;
+}
+
+.breakdown__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  cursor: pointer;
+  list-style: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.breakdown__summary::-webkit-details-marker {
+  display: none;
+}
+
+.breakdown__summary .section-subhead {
+  margin: 0;
+}
+
+.breakdown__count {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.breakdown__chevron {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: auto;
+  border-right: 2px solid var(--ink-muted);
+  border-bottom: 2px solid var(--ink-muted);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.breakdown[open] > .breakdown__summary .breakdown__chevron {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+.breakdown__body {
+  margin-top: 0.8rem;
 }
 
 .crash-cards {
