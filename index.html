@@ -54,76 +54,6 @@
     </ul>
   </section>
 
-  <section class="simulator" aria-labelledby="sim-heading">
-    <h2 id="sim-heading" class="simulator__heading">シミュレーション条件</h2>
-
-    <form id="sim-form" class="sim-form" novalidate>
-
-      <fieldset class="panel">
-        <legend class="panel__legend">基本条件</legend>
-        <div class="field-grid">
-          <div class="field">
-            <label for="input-years">運用期間</label>
-            <div class="field__input-row">
-              <input type="number" id="input-years" value="30" min="1" max="60" step="1" inputmode="numeric">
-              <span class="field__unit">年</span>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="input-initial">初期投資元本</label>
-            <div class="field__input-row">
-              <input type="number" id="input-initial" value="0" min="0" step="10" inputmode="decimal">
-              <span class="field__unit">万円</span>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="input-age">現在の年齢<span class="field__optional">任意</span></label>
-            <div class="field__input-row">
-              <input type="number" id="input-age" value="" min="0" max="120" step="1" inputmode="numeric" placeholder="未入力可">
-              <span class="field__unit">歳</span>
-            </div>
-            <p class="field__hint">入力すると、グラフの横軸に「何歳のとき」かを併記します。計算結果は変わりません。</p>
-          </div>
-
-          <div class="field field--wide">
-            <label for="input-return">想定利回り（年率）</label>
-            <div class="field__input-row">
-              <input type="number" id="input-return" value="5" min="-20" max="30" step="0.1" inputmode="decimal">
-              <span class="field__unit">%</span>
-            </div>
-            <p class="field__hint">暴落期間以外に使う利回りです。下の数値をクリックすると入ります。</p>
-            <div id="return-reference" class="return-reference"></div>
-            <p class="field__hint field__hint--fine">
-              各指数の年平均リターン（実績）。現地通貨ベースで為替は含みません。対象期間は指数ごとに異なります。
-            </p>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="panel">
-        <legend class="panel__legend">拠出プラン</legend>
-        <p class="panel__note">上から順に適用されます。指定した年から次の期間まで、その内容が続きます。</p>
-        <div id="phase-list" class="plan-list"></div>
-        <button type="button" id="add-phase" class="button button--ghost">＋ 期間を追加（停止・取り崩し）</button>
-      </fieldset>
-
-      <fieldset class="panel">
-        <legend class="panel__legend">暴落シナリオ</legend>
-        <p class="panel__note">
-          下落率と回復期間は選んだ指数での実績値です。暴落どうしの期間は重ねられません。
-        </p>
-        <div id="crash-list" class="plan-list"></div>
-        <button type="button" id="add-crash" class="button button--ghost">＋ 暴落を追加</button>
-      </fieldset>
-
-      <button type="submit" class="button button--primary">シミュレーションする</button>
-    </form>
-
-    <p id="form-error" class="form-error" role="alert" hidden></p>
-  </section>
-
   <section id="results" class="results" aria-labelledby="results-heading" hidden>
     <h2 id="results-heading">シミュレーション結果</h2>
 
@@ -152,6 +82,97 @@
       過去データに基づく試算であり、将来の運用成果を保証するものではありません。
       暴落の時期・深さ・回復期間は毎回異なります。投資判断はご自身の責任で行ってください。
     </p>
+  </section>
+
+  <section class="simulator" aria-labelledby="sim-heading">
+    <h2 id="sim-heading" class="simulator__heading">シミュレーション条件</h2>
+
+    <form id="sim-form" class="sim-form" novalidate>
+
+      <details class="panel" open>
+        <summary class="panel__summary">
+          <span class="panel__legend">基本条件</span>
+          <span class="panel__digest" id="digest-basic"></span>
+          <span class="panel__chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="panel__body">
+          <div class="field-grid">
+            <div class="field">
+              <label for="input-years">運用期間</label>
+              <div class="field__input-row">
+                <input type="number" id="input-years" value="30" min="1" max="60" step="1" inputmode="numeric">
+                <span class="field__unit">年</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="input-initial">初期投資元本</label>
+              <div class="field__input-row">
+                <input type="number" id="input-initial" value="0" min="0" step="10" inputmode="decimal">
+                <span class="field__unit">万円</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="input-age">現在の年齢<span class="field__optional">任意</span></label>
+              <div class="field__input-row">
+                <input type="number" id="input-age" value="" min="0" max="120" step="1" inputmode="numeric" placeholder="未入力可">
+                <span class="field__unit">歳</span>
+              </div>
+              <p class="field__hint">入力すると、グラフの横軸に「何歳のとき」かを併記します。計算結果は変わりません。</p>
+            </div>
+
+            <div class="field field--wide">
+              <label for="input-return">想定利回り（年率）</label>
+              <div class="field__input-row">
+                <input type="number" id="input-return" value="9.4" min="-20" max="30" step="0.1" inputmode="decimal">
+                <span class="field__unit">%</span>
+              </div>
+              <p class="field__hint">暴落期間以外に使う利回りです。下の数値をクリックすると入ります。</p>
+              <div id="return-reference" class="return-reference"></div>
+              <p class="field__hint field__hint--fine">
+                各指数の年平均リターン（実績）。現地通貨ベースで為替は含みません。対象期間は指数ごとに異なります。
+              </p>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel">
+        <summary class="panel__summary">
+          <span class="panel__legend">拠出プラン</span>
+          <span class="panel__digest" id="digest-phases"></span>
+          <span class="panel__chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="panel__body">
+          <p class="panel__note">上から順に適用されます。指定した年から次の期間まで、その内容が続きます。</p>
+          <div id="phase-list" class="plan-list"></div>
+          <button type="button" id="add-phase" class="button button--ghost">＋ 期間を追加（停止・取り崩し）</button>
+        </div>
+      </details>
+
+      <details class="panel">
+        <summary class="panel__summary">
+          <span class="panel__legend">暴落シナリオ</span>
+          <span class="panel__digest" id="digest-crashes"></span>
+          <span class="panel__chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="panel__body">
+          <p class="panel__note">
+            下落率と回復期間は選んだ指数での実績値です。暴落どうしの期間は重ねられません。
+          </p>
+          <div id="crash-list" class="plan-list"></div>
+          <button type="button" id="add-crash" class="button button--ghost">＋ 暴落を追加</button>
+        </div>
+      </details>
+
+      <!-- フォームが縦に長いので、スクロール中も押せるよう下端に貼り付ける -->
+      <div class="sim-form__actions">
+        <button type="submit" class="button button--primary">シミュレーションする</button>
+      </div>
+    </form>
+
+    <p id="form-error" class="form-error" role="alert" hidden></p>
   </section>
 
   <!-- 広告枠：AdSense等の広告コードをこのdiv内に配置する -->

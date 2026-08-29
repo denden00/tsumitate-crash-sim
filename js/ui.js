@@ -522,11 +522,64 @@
     const errorEl = document.getElementById("form-error");
     const sourceEl = document.getElementById("result-source");
 
+    const digestBasicEl = document.getElementById("digest-basic");
+    const digestPhasesEl = document.getElementById("digest-phases");
+    const digestCrashesEl = document.getElementById("digest-crashes");
+
     // 画面上の並びと同じ順序で保持する。開始年は change のタイミングだけ並べ替える
+    // 初期値は「S&P500に暴落が4回来る30年積立」。読み込み直後に run() で1回試算する
     const state = {
-      phases: [{ startYear: 0, mode: "contribute", amountMan: 3 }],
-      crashes: [{ indexId: "sp500", eventId: "lehman", startYear: 5 }],
+      phases: [{ startYear: 0, mode: "contribute", amountMan: 5 }],
+      crashes: [
+        { indexId: "sp500", eventId: "dotcom", startYear: 5 },
+        { indexId: "sp500", eventId: "lehman", startYear: 15 },
+        { indexId: "sp500", eventId: "corona", startYear: 22 },
+        { indexId: "sp500", eventId: "trump2025", startYear: 24 },
+      ],
     };
+
+    /** 初期表示の想定利回りは、参考値のS&P500（実績CAGR）に合わせる。 */
+    function applyDefaultReturn() {
+      if (!indexStatsJson || !Array.isArray(indexStatsJson.indices)) return;
+      const sp500 = indexStatsJson.indices.find((s) => s.indexId === "sp500");
+      if (!sp500 || !sp500.full || !Number.isFinite(sp500.full.percent)) return;
+      returnInput.value = sp500.full.percent.toFixed(1);
+    }
+
+    /** 閉じたパネルでも中身が分かるよう、見出し横の要約を更新する。 */
+    function renderDigests() {
+      if (digestBasicEl) {
+        // run() と同じ既定値で読むので、空欄のときも試算に使われる値がそのまま出る
+        digestBasicEl.textContent =
+          `${readNumber(yearsInput, 30)}年 ／ 利回り ${readNumber(returnInput, 5)}%`;
+      }
+
+      if (digestPhasesEl) {
+        if (state.phases.length === 1) {
+          const only = state.phases[0];
+          digestPhasesEl.textContent =
+            only.mode === "pause"
+              ? MODE_LABELS.pause
+              : `${MODE_LABELS[only.mode]} 毎月${only.amountMan || 0}万円`;
+        } else {
+          digestPhasesEl.textContent = `${state.phases.length}期間（${state.phases
+            .map((p) => MODE_LABELS[p.mode])
+            .join("→")}）`;
+        }
+      }
+
+      if (digestCrashesEl) {
+        if (!state.crashes.length) {
+          digestCrashesEl.textContent = "設定なし";
+        } else {
+          const names = state.crashes.map(function (crash) {
+            const event = catalog.events.find((e) => e.id === crash.eventId);
+            return event ? event.name : crash.eventId;
+          });
+          digestCrashesEl.textContent = `${state.crashes.length}件：${names.join("・")}`;
+        }
+      }
+    }
 
     /* --- 想定利回りの参考値 --- */
 
@@ -840,6 +893,8 @@
     }
 
     function run() {
+      renderDigests();
+
       const years = readNumber(yearsInput, 30);
       if (!(years > 0)) return showError("運用期間は1年以上で入力してください。");
       if (years > 60) return showError("運用期間は60年以内で入力してください。");
@@ -920,9 +975,19 @@
       run();
     });
 
+    /** 実行ボタンはフォーム下端に貼り付いているので、押したらグラフまで戻す。 */
+    function scrollToResults() {
+      if (resultsSection.hidden || typeof resultsSection.scrollIntoView !== "function") return;
+      const reduceMotion =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      resultsSection.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    }
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       run();
+      scrollToResults();
     });
     // 基本条件の入力欄は静的なので、それぞれに input を張れば足りる
     yearsInput.addEventListener("input", run);
@@ -930,6 +995,7 @@
     initialInput.addEventListener("input", run);
     ageInput.addEventListener("input", run);
 
+    applyDefaultReturn();
     renderPhases();
     renderCrashes();
     renderReturnReference();
