@@ -47,11 +47,6 @@
       リーマンショックやコロナショックの<strong>実際の月次データ</strong>をそのまま積立に当てはめて、
       下落の深さと回復までの時間を再現します。暴落は何度でも置けます。
     </p>
-    <ul class="hero__points">
-      <li><span class="hero__point-key">実データ</span>暴落期間は想定利回りではなく実際の値動きで計算</li>
-      <li><span class="hero__point-key">複数回</span>暴落を最大5回まで、好きなタイミングに配置</li>
-      <li><span class="hero__point-key">出口まで</span>積立・停止・取り崩しを期間ごとに設定可能</li>
-    </ul>
   </section>
 
   <section id="results" class="results" aria-labelledby="results-heading" hidden>
@@ -65,6 +60,13 @@
         グラフ上をなぞる（またはキーボードの左右キー）と各時点の金額を表示します。
       </p>
     </figure>
+
+    <!-- 結果を見てから条件を直したくなるので、グラフ直下に入力欄への導線を置く -->
+    <div class="chart-actions">
+      <button type="button" id="edit-conditions" class="button button--outline">
+        シミュレーション条件を変更する
+      </button>
+    </div>
 
     <div id="result-summary"></div>
     <div id="result-insight"></div>
@@ -84,7 +86,7 @@
     </p>
   </section>
 
-  <section class="simulator" aria-labelledby="sim-heading">
+  <section id="simulator" class="simulator" aria-labelledby="sim-heading" tabindex="-1">
     <h2 id="sim-heading" class="simulator__heading">シミュレーション条件</h2>
 
     <form id="sim-form" class="sim-form" novalidate>
