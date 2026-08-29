@@ -228,13 +228,32 @@
     container.appendChild(grid);
   }
 
-  /** 暴落1件ごとの内訳。複数指定できるので、まとめてカードで並べる。 */
+  // 入力のたびに再描画するので、開閉状態は描画をまたいで覚えておく
+  let breakdownOpen = true;
+
+  /**
+   * 暴落1件ごとの内訳。複数指定できるので、まとめてカードで並べる。
+   * 暴落を何度も置くと縦に長くなるため、丸ごとたためるようにしてある。
+   */
   function renderCrashBreakdown(container, result) {
     container.textContent = "";
     if (!result.crashes.length) return;
 
-    container.appendChild(elem("h3", "section-subhead", "暴落ごとの内訳"));
+    const details = elem("details", "breakdown");
+    details.open = breakdownOpen;
+    details.addEventListener("toggle", function () {
+      breakdownOpen = details.open;
+    });
 
+    const summary = elem("summary", "breakdown__summary");
+    summary.appendChild(elem("h3", "section-subhead", "暴落ごとの内訳"));
+    summary.appendChild(elem("span", "breakdown__count", result.crashes.length + "件"));
+    const chevron = elem("span", "breakdown__chevron");
+    chevron.setAttribute("aria-hidden", "true");
+    summary.appendChild(chevron);
+    details.appendChild(summary);
+
+    const body = elem("div", "breakdown__body");
     const list = elem("div", "crash-cards");
     result.crashes.forEach(function (c, i) {
       const card = elem("article", "crash-card");
@@ -297,7 +316,9 @@
       list.appendChild(card);
     });
 
-    container.appendChild(list);
+    body.appendChild(list);
+    details.appendChild(body);
+    container.appendChild(details);
   }
 
   /** 数字だけでは伝わりにくい示唆を、条件がそろったときだけ1文で添える。 */
@@ -521,6 +542,8 @@
     const tableEl = document.getElementById("result-table");
     const errorEl = document.getElementById("form-error");
     const sourceEl = document.getElementById("result-source");
+    const simulatorSection = document.getElementById("simulator");
+    const editConditionsButton = document.getElementById("edit-conditions");
 
     const digestBasicEl = document.getElementById("digest-basic");
     const digestPhasesEl = document.getElementById("digest-phases");
@@ -975,13 +998,29 @@
       run();
     });
 
-    /** 実行ボタンはフォーム下端に貼り付いているので、押したらグラフまで戻す。 */
-    function scrollToResults() {
-      if (resultsSection.hidden || typeof resultsSection.scrollIntoView !== "function") return;
+    function scrollToSection(target) {
+      if (!target || typeof target.scrollIntoView !== "function") return;
       const reduceMotion =
         typeof window.matchMedia === "function" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      resultsSection.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    }
+
+    /** 実行ボタンはフォーム下端に貼り付いているので、押したらグラフまで戻す。 */
+    function scrollToResults() {
+      if (resultsSection.hidden) return;
+      scrollToSection(resultsSection);
+    }
+
+    /** グラフ直下の「条件を変更する」。結果を見た流れで入力欄へ戻す導線。 */
+    if (editConditionsButton) {
+      editConditionsButton.addEventListener("click", function () {
+        scrollToSection(simulatorSection);
+        // スクロールだけだとキーボード操作の位置が結果側に残るので、フォーカスも移す
+        if (simulatorSection && typeof simulatorSection.focus === "function") {
+          simulatorSection.focus({ preventScroll: true });
+        }
+      });
     }
 
     form.addEventListener("submit", function (e) {
